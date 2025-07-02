@@ -3,21 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>て形タイピングチャレンジ (Te-Form Typing Challenge)</title>
+    <title>日本語動詞チャレンジ (Japanese Verb Challenge)</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Noto+Sans+JP:wght@700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div class="game-container">
+    <div id="main-container">
         <!-- Start Screen -->
         <div id="start-screen" class="screen active">
-            <h1>て形タイピングチャレンジ</h1>
-            <p>ます形を見て、正しい「て形」をひらがなで入力してください。</p>
-            <p class="lang-mm">ます Form ကိုကြည့်ပြီး မှန်ကန်သော て形 ကို Hiragana ဖြင့် ရိုက်ထည့်ပါ။</p>
+            <h1>日本語動詞チャレンジ</h1>
+            <p>N5レベルの動詞活用をマスターしよう！</p>
+            <p class="lang-mm">N5 Level ကြိယာ活用ပုံစံများကို ကျွမ်းကျင်အောင်လေ့လာပါ။</p>
             <button id="start-button" class="btn">スタート！</button>
+        </div>
+
+        <!-- Challenge Selection Screen -->
+        <div id="challenge-selection-screen" class="screen">
+            <h1>チャレンジを選ぶ</h1>
+            <p>練習したい活用を選んでください。</p>
+            <div id="challenge-grid">
+                <button class="challenge-btn" data-mode="te">ます形 → て形</button>
+                <button class="challenge-btn" data-mode="ta">辞書形 → た形</button>
+                <button class="challenge-btn" data-mode="nai">辞書形 → ない形</button>
+                <button class="challenge-btn" data-mode="jisho">ます形 → 辞書形</button>
+                <button class="challenge-btn mixed-mode" data-mode="mixed">
+                    ミックスチャレンジ
+                    <span>(全部)</span>
+                </button>
+            </div>
         </div>
 
         <!-- Quiz Screen -->
@@ -28,17 +44,17 @@
             </div>
 
             <div id="question-container">
-                <p id="question-masu"></p>
+                <p id="prompt-text"></p>
+                <p id="question-verb"></p>
                 <p id="question-burmese" class="lang-mm"></p>
             </div>
 
             <form id="answer-form">
-                <input type="text" id="answer-input" placeholder="てけい を にゅうりょく" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                <button type="submit" class="btn submit-btn">こたえ</button>
+                <input type="text" id="answer-input" placeholder="こたえ を にゅうりょく" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <button type="submit" class="btn submit-btn">決定</button>
             </form>
             
             <button id="idk-button" class="btn-secondary">わからない (မသိဘူး)</button>
-
         </div>
 
         <!-- Result Screen -->

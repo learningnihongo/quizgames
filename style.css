@@ -1,11 +1,16 @@
 :root {
-    --bg-color: #eef1f5;
+    --bg-color: #f0f4f8;
     --card-color: #ffffff;
-    --primary-color: #4a69bd;
+    --primary-color: #2c3e50;
+    /* Midnight Blue */
+    --accent-color: #3498db;
+    /* Peter River Blue */
     --text-color: #333;
-    --correct-color: #4caf50;
-    --incorrect-color: #f44336;
-    --font-jp: 'M PLUS Rounded 1c', sans-serif;
+    --correct-color: #2ecc71;
+    /* Emerald */
+    --incorrect-color: #e74c3c;
+    /* Alizarin */
+    --font-jp: 'M PLUS Rounded 1c', 'Noto Sans JP', sans-serif;
     --font-burmese: 'Padauk', sans-serif;
 }
 
@@ -22,14 +27,15 @@ body {
     box-sizing: border-box;
 }
 
-.game-container {
+#main-container {
     width: 100%;
-    max-width: 500px;
+    max-width: 550px;
     background-color: var(--card-color);
     padding: 30px 40px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
     text-align: center;
+    transition: all 0.3s ease;
 }
 
 .screen {
@@ -44,37 +50,101 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 h1 {
     color: var(--primary-color);
     font-weight: 800;
+    margin-bottom: 8px;
+}
+
+h1+p {
+    margin-top: 0;
+    font-size: 1.1em;
+    color: #666;
 }
 
 .lang-mm {
     font-family: var(--font-burmese);
-    color: #666;
+    color: #555;
+    font-size: 1.1em;
 }
 
 .btn {
     font-family: var(--font-jp);
-    font-weight: 500;
+    font-weight: 800;
     background: var(--primary-color);
     color: white;
     border: none;
-    padding: 12px 25px;
-    border-radius: 10px;
-    font-size: 1.1em;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-size: 1.2em;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.2s;
+    transition: all 0.2s;
     margin-top: 20px;
 }
 
 .btn:hover {
-    background-color: #3b59a1;
-    transform: translateY(-2px);
+    background-color: #34495e;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Challenge Selection Screen */
+#challenge-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.challenge-btn {
+    background-color: #fff;
+    color: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.challenge-btn:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+    transform: translateY(-4px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.challenge-btn.mixed-mode {
+    grid-column: 1 / -1;
+    /* Span full width */
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.challenge-btn.mixed-mode span {
+    display: block;
+    font-size: 0.8em;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.challenge-btn.mixed-mode:hover {
+    background-color: #3c546e;
+    border-color: #3c546e;
 }
 
 /* Quiz Screen */
@@ -84,20 +154,27 @@ h1 {
     width: 100%;
     font-size: 1.2em;
     font-weight: 500;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     color: var(--primary-color);
 }
 
 #question-container {
     background-color: var(--bg-color);
     width: 100%;
-    padding: 25px;
+    padding: 20px;
     border-radius: 15px;
     margin-bottom: 25px;
 }
 
-#question-masu {
-    font-size: 2.5em;
+#prompt-text {
+    font-size: 1.1em;
+    color: var(--accent-color);
+    font-weight: 700;
+    margin: 0 0 10px 0;
+}
+
+#question-verb {
+    font-size: 3em;
     font-weight: 800;
     margin: 0;
 }
@@ -122,13 +199,24 @@ h1 {
     font-size: 1.5em;
     font-family: var(--font-jp);
     text-align: center;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition: all 0.3s;
 }
 
 #answer-input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(74, 105, 189, 0.2);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
+}
+
+#answer-input.correct {
+    border-color: var(--correct-color);
+    background-color: #f0fff0;
+    animation: pulse-green 0.5s;
+}
+
+#answer-input.incorrect {
+    border-color: var(--incorrect-color);
+    animation: shake 0.4s;
 }
 
 .submit-btn {
@@ -136,30 +224,43 @@ h1 {
     padding: 0 30px;
 }
 
-/* Input feedback animations */
-#answer-input.correct {
-    border-color: var(--correct-color);
-    background-color: #f1fff1;
-    animation: pulse-green 0.5s;
-}
-#answer-input.incorrect {
-    border-color: var(--incorrect-color);
-    animation: shake 0.4s;
-}
-
 @keyframes shake {
-    10%, 90% { transform: translateX(-5px); }
-    20%, 80% { transform: translateX(5px); }
-    30%, 50%, 70% { transform: translateX(-3px); }
-    40%, 60% { transform: translateX(3px); }
+
+    10%,
+    90% {
+        transform: translateX(-5px);
+    }
+
+    20%,
+    80% {
+        transform: translateX(5px);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translateX(-3px);
+    }
+
+    40%,
+    60% {
+        transform: translateX(3px);
+    }
 }
 
 @keyframes pulse-green {
-    0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.5); }
-    70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
-}
+    0% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.5);
+    }
 
+    70% {
+        box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+    }
+}
 
 .btn-secondary {
     background: none;
@@ -169,11 +270,11 @@ h1 {
     cursor: pointer;
     margin-top: 15px;
 }
+
 .btn-secondary:hover {
-    color: var(--primary-color);
+    color: var(--accent-color);
 }
 
-/* Result Screen */
 .score-display {
     font-size: 4em;
     font-weight: 800;
