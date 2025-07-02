@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Complete data from the original list
     const verbData = [
         { te: "てつだって", jisho: "てつだう", burmese: "ကူညီသည်" },
         { te: "みて", jisho: "みる", burmese: "ကြည့်သည်။မြင်သည်။" },
@@ -72,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { te: "こぴーして", jisho: "こぴーする", burmese: "မိတ္တူကူးသည်" },
         { te: "うまれて", jisho: "うまれる", burmese: "မွေးဖွားလာသည်" },
         { te: "おぼえて", jisho: "おぼえる", burmese: "မှတ်မိသည်။မှတ်သည်" },
-        { te: "とって", jisho: "とる", burmese: "ယူသည်" }, // Note: とる has multiple meanings
+        { te: "とって", jisho: "とる", burmese: "ယူသည်" },
         { te: "もっていって", jisho: "もっていく", burmese: "ယူသွားသည်(သက်မဲ့ပစ္စည်းတွင်သုံးသည်)" },
         { te: "もってきて", jisho: "もってくる", burmese: "ယူလာသည်(သက်မဲ့ပစ္စည်းတွင်သုံးသည်)" },
         { te: "およいで", jisho: "およぐ", burmese: "ရေကူးသည်" },
@@ -108,7 +107,30 @@ document.addEventListener('DOMContentLoaded', () => {
         { te: "おきて", jisho: "おきる", burmese: "အိပ်ရာထသည်" }
     ];
 
-    // DOM Elements
+    // --- UTILITY: Generate masu-form ---
+    function getMasuForm(jisho, te) {
+        if (jisho === 'する' || (jisho.endsWith('する') && jisho.length > 2)) return jisho.slice(0, -2) + 'します';
+        if (jisho === 'くる' || (jisho.endsWith('くる') && jisho.length > 2)) return jisho.slice(0, -2) + 'きます';
+        if (jisho === 'いく') return 'いきます';
+
+        const lastChar = jisho.slice(-1);
+        if (lastChar === 'る' && te.slice(-1) === 'て' && te.slice(-2, -1) !== 'っ') {
+            return jisho.slice(0, -1) + 'ます';
+        }
+        const i_line = { 'う': 'い', 'く': 'き', 'ぐ': 'ぎ', 'す': 'し', 'つ': 'ち', 'ぬ': 'に', 'ぶ': 'び', 'む': 'み', 'る': 'り' };
+        if (i_line[lastChar]) {
+            return jisho.slice(0, -1) + i_line[lastChar] + 'ます';
+        }
+        return jisho; // fallback
+    }
+
+    // --- DATA PREPARATION ---
+    const verbs = verbData.map(v => ({
+        ...v,
+        masu: getMasuForm(v.jisho, v.te)
+    }));
+
+    // --- DOM ELEMENTS ---
     const screens = {
         start: document.getElementById('start-screen'),
         quiz: document.getElementById('quiz-screen'),
@@ -119,39 +141,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const timerDisplay = document.querySelector('#timer span');
     const scoreDisplay = document.querySelector('#score span');
     const finalScoreDisplay = document.getElementById('final-score');
-    const card = document.getElementById('verb-card');
-    const jishoFormDisplay = document.getElementById('jisho-form');
-    const teFormDisplay = document.getElementById('te-form');
-    const burmeseMeaningDisplay = document.getElementById('burmese-meaning'); // New element
-    const resultOverlay = document.getElementById('result-overlay');
-    const trueButton = document.getElementById('choice-true');
-    const falseButton = document.getElementById('choice-false');
+
+    const questionMasu = document.getElementById('question-masu');
+    const questionBurmese = document.getElementById('question-burmese');
+    const answerForm = document.getElementById('answer-form');
+    const answerInput = document.getElementById('answer-input');
+    const idkButton = document.getElementById('idk-button');
+
     const correctSound = document.getElementById('correct-sound');
     const incorrectSound = document.getElementById('incorrect-sound');
 
-    // Game State
+    // --- GAME STATE ---
     let score = 0;
     let timer;
-    let timeLeft = 60;
-    let isCurrentPairCorrect = false;
+    let timeLeft = 90;
+    let shuffledVerbs;
+    let currentQuestionIndex = 0;
     let isAnswering = false;
 
-    // Functions
+    // --- FUNCTIONS ---
     function switchScreen(screenName) {
         Object.values(screens).forEach(s => s.classList.remove('active'));
         screens[screenName].classList.add('active');
     }
 
+    // ** Fixed Sound Playback **
+    function playSound(sound) {
+        sound.currentTime = 0; // Rewind to start to allow for rapid plays
+        sound.play();
+    }
+
     function startGame() {
         score = 0;
-        timeLeft = 60;
+        timeLeft = 90;
+        currentQuestionIndex = 0;
         scoreDisplay.textContent = score;
         timerDisplay.textContent = timeLeft;
-        isAnswering = false;
+
+        shuffledVerbs = [...verbs].sort(() => Math.random() - 0.5);
 
         switchScreen('quiz');
-
-        nextCard();
+        showNextQuestion();
 
         clearInterval(timer);
         timer = setInterval(() => {
@@ -163,83 +193,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
+    function showNextQuestion() {
+        if (currentQuestionIndex >= shuffledVerbs.length) {
+            endGame();
+            return;
+        }
+
+        isAnswering = false;
+        const currentVerb = shuffledVerbs[currentQuestionIndex];
+
+        questionMasu.textContent = currentVerb.masu;
+        questionBurmese.textContent = currentVerb.burmese;
+
+        answerInput.value = '';
+        answerInput.classList.remove('correct', 'incorrect');
+        answerInput.focus();
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault(); // Stop form from reloading page
+        if (isAnswering) return;
+
+        const userAnswer = answerInput.value.trim();
+        const correctAnswer = shuffledVerbs[currentQuestionIndex].te;
+
+        if (userAnswer === correctAnswer) {
+            isAnswering = true;
+            score++;
+            scoreDisplay.textContent = score;
+
+            playSound(correctSound);
+            answerInput.classList.add('correct');
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                showNextQuestion();
+            }, 800); // Wait a bit before next question
+
+        } else {
+            playSound(incorrectSound);
+            answerInput.classList.add('incorrect');
+            // Remove the shake animation class after it finishes
+            setTimeout(() => {
+                answerInput.classList.remove('incorrect');
+            }, 500);
+        }
+    }
+
+    function showAnswer() {
+        if (isAnswering) return;
+        isAnswering = true;
+
+        const correctAnswer = shuffledVerbs[currentQuestionIndex].te;
+        answerInput.value = correctAnswer;
+        answerInput.classList.add('correct');
+
+        setTimeout(() => {
+            currentQuestionIndex++;
+            showNextQuestion();
+        }, 1200); // Wait a bit longer since user is reading the answer
+    }
+
     function endGame() {
         clearInterval(timer);
         finalScoreDisplay.textContent = score;
         switchScreen('result');
     }
 
-    function nextCard() {
-        isAnswering = true;
-        card.classList.remove('exit-left', 'exit-right');
-        resultOverlay.classList.remove('visible', 'correct', 'incorrect');
-
-        if (Math.random() > 0.5) {
-            // Correct pair
-            isCurrentPairCorrect = true;
-            const verb = verbData[Math.floor(Math.random() * verbData.length)];
-            jishoFormDisplay.textContent = verb.jisho;
-            teFormDisplay.textContent = verb.te;
-            burmeseMeaningDisplay.textContent = verb.burmese; // Show meaning
-        } else {
-            // Incorrect pair
-            isCurrentPairCorrect = false;
-            const verb1 = verbData[Math.floor(Math.random() * verbData.length)];
-            let verb2 = verbData[Math.floor(Math.random() * verbData.length)];
-            while (verb1.jisho === verb2.jisho) {
-                verb2 = verbData[Math.floor(Math.random() * verbData.length)];
-            }
-            jishoFormDisplay.textContent = verb1.jisho;
-            teFormDisplay.textContent = verb2.te; // Mismatched te-form
-            burmeseMeaningDisplay.textContent = verb1.burmese; // Show meaning of the jisho form
-        }
-        isAnswering = false;
-    }
-
-    function handleChoice(userChoice) {
-        if (isAnswering) return;
-        isAnswering = true;
-
-        const correct = userChoice === isCurrentPairCorrect;
-
-        if (correct) {
-            score++;
-            scoreDisplay.textContent = score;
-            resultOverlay.textContent = '正';
-            resultOverlay.classList.add('correct');
-            correctSound.play();
-            card.classList.add(userChoice ? 'exit-right' : 'exit-left');
-        } else {
-            resultOverlay.textContent = '誤';
-            resultOverlay.classList.add('incorrect');
-            incorrectSound.play();
-            card.classList.add(userChoice ? 'exit-right' : 'exit-left');
-        }
-
-        resultOverlay.classList.add('visible');
-
-        setTimeout(() => {
-            if (timeLeft > 0) {
-                nextCard();
-            }
-        }, 600);
-    }
-
-    // Event Listeners
+    // --- EVENT LISTENERS ---
     startButton.addEventListener('click', startGame);
     playAgainButton.addEventListener('click', startGame);
-    trueButton.addEventListener('click', () => handleChoice(true));
-    falseButton.addEventListener('click', () => handleChoice(false));
-
-    // Swipe functionality
-    let startX = 0;
-    card.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
-    card.addEventListener('touchend', (e) => {
-        let endX = e.changedTouches[0].clientX;
-        const diff = endX - startX;
-        if (Math.abs(diff) > 50) {
-            handleChoice(diff > 0); // Right swipe is true, Left is false
-        }
-    });
-
+    answerForm.addEventListener('submit', handleSubmit);
+    idkButton.addEventListener('click', showAnswer);
 });
