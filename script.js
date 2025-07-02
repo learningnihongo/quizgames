@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- DATA (Complete List) ---
     const verbData = [
         { te: "てつだって", jisho: "てつだう", burmese: "ကူညီသည်" },
         { te: "みて", jisho: "みる", burmese: "ကြည့်သည်။မြင်သည်။" },
@@ -74,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { te: "とって", jisho: "とる", burmese: "ယူသည်" },
         { te: "もっていって", jisho: "もっていく", burmese: "ယူသွားသည်(သက်မဲ့ပစ္စည်းတွင်သုံးသည်)" },
         { te: "もってきて", jisho: "もってくる", burmese: "ယူလာသည်(သက်မဲ့ပစ္စည်းတွင်သုံးသည်)" },
+        { te: "とって", jisho: "とる", burmese: "ရသည်။ယူသည်" },
         { te: "およいで", jisho: "およぐ", burmese: "ရေကူးသည်" },
         { te: "あびて", jisho: "あびる", burmese: "ရေချိုးသည်" },
         { te: "かいて", jisho: "かく", burmese: "ရေးသည်။" },
@@ -165,9 +167,8 @@ document.addEventListener('DOMContentLoaded', () => {
         screens[screenName].classList.add('active');
     }
 
-    // ** Fixed Sound Playback **
     function playSound(sound) {
-        sound.currentTime = 0; // Rewind to start to allow for rapid plays
+        sound.currentTime = 0;
         sound.play();
     }
 
@@ -211,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSubmit(event) {
-        event.preventDefault(); // Stop form from reloading page
+        event.preventDefault();
         if (isAnswering) return;
 
         const userAnswer = answerInput.value.trim();
@@ -228,12 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 currentQuestionIndex++;
                 showNextQuestion();
-            }, 800); // Wait a bit before next question
+            }, 800);
 
         } else {
             playSound(incorrectSound);
             answerInput.classList.add('incorrect');
-            // Remove the shake animation class after it finishes
             setTimeout(() => {
                 answerInput.classList.remove('incorrect');
             }, 500);
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             currentQuestionIndex++;
             showNextQuestion();
-        }, 1200); // Wait a bit longer since user is reading the answer
+        }, 1200);
     }
 
     function endGame() {
