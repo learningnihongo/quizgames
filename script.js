@@ -70,18 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (group === 1) {
             const i_line = { 'う': 'い', 'く': 'き', 'ぐ': 'ぎ', 'す': 'し', 'つ': 'ち', 'ぬ': 'に', 'ぶ': 'び', 'む': 'み', 'る': 'り' };
             const lastChar = jisho.slice(-1);
-            if (jisho === 'いく') return 'いきます'; // Special case, but follows pattern
+            if (jisho === 'いく') return 'いきます';
             return jisho.slice(0, -1) + i_line[lastChar] + 'ます';
         }
         return jisho;
     };
-    const getTaForm = (te) => {
-        if (te.endsWith('て')) return te.slice(0, -1) + 'た';
-        if (te.endsWith('で')) return te.slice(0, -1) + 'だ';
-        return te;
-    };
+    const getTaForm = (te) => te.endsWith('て') ? te.slice(0, -1) + 'た' : te.slice(0, -1) + 'だ';
     const getNaiForm = (jisho, group) => {
-        if (jisho === 'ある') return 'ない'; // special case
+        if (jisho === 'ある') return 'ない';
         if (group === 3) {
             if (jisho.endsWith('する')) return jisho.slice(0, -2) + 'しない';
             if (jisho.endsWith('くる')) return jisho.slice(0, -2) + 'こない';
@@ -182,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mode = challengeModes[Math.floor(Math.random() * challengeModes.length)];
         }
 
+        // Set question based on mode
         switch (mode) {
             case 'te':
                 promptText.textContent = "「ます形」を「て形」にしてください";
@@ -250,12 +247,22 @@ document.addEventListener('DOMContentLoaded', () => {
         switchScreen('result');
     }
 
-    // --- EVENT LISTENERS ---
-    startButton.addEventListener('click', () => switchScreen('challengeSelection'));
-    challengeButtons.forEach(button => {
-        button.addEventListener('click', () => startGame(button.dataset.mode));
+    // --- EVENT LISTENERS (FIXED) ---
+    startButton.addEventListener('click', () => {
+        switchScreen('challengeSelection');
     });
-    playAgainButton.addEventListener('click', () => switchScreen('challengeSelection'));
+
+    challengeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const mode = button.dataset.mode;
+            startGame(mode);
+        });
+    });
+
+    playAgainButton.addEventListener('click', () => {
+        switchScreen('challengeSelection');
+    });
+
     answerForm.addEventListener('submit', handleSubmit);
     idkButton.addEventListener('click', showAnswer);
 });
