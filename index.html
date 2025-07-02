@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ဂျပန်ကြိယာပုံစံပြောင်း Quiz Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Padauk:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Padauk', sans-serif;
+        }
+
+        .correct {
+            animation: flash-green 0.5s;
+        }
+
+        .incorrect {
+            animation: shake 0.5s;
+        }
+
+        @keyframes flash-green {
+
+            0%,
+            100% {
+                background-color: #22c55e;
+                color: white;
+            }
+
+            50% {
+                background-color: #4ade80;
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-10px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(10px);
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 flex items-center justify-center min-h-screen p-4">
+
+    <div id="quiz-container"
+        class="w-full max-w-2xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 transition-all duration-500">
+
+        <div id="start-screen">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-teal-600 dark:text-teal-400 mb-4">
+                ဂျပန်ကြိယာပုံစံပြောင်း Quiz</h1>
+            <p class="text-center text-slate-600 dark:text-slate-400 mb-8">ပေးထားသော `ます` form အတွက် မှန်ကန်သော `て` form
+                သို့မဟုတ် `辞書形` ကို ရွေးချယ်ပါ။</p>
+            <button onclick="startGame()"
+                class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg text-xl transition-transform transform hover:scale-105">ဂိမ်းစရန်</button>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div id="question-counter" class="text-sm font-semibold text-slate-500"></div>
+                <div id="score" class="text-lg font-bold text-teal-600 dark:text-teal-400">Score: 0</div>
+            </div>
+
+            <div class="bg-slate-100 dark:bg-slate-700 p-6 rounded-lg mb-6">
+                <p class="text-center text-slate-600 dark:text-slate-300 mb-2">အောက်ပါ `ます` form ၏</p>
+                <h2 id="question" class="text-4xl md:text-5xl font-bold text-center"></h2>
+                <p id="question-type" class="text-center text-teal-500 dark:text-teal-400 font-semibold mt-2"></p>
+            </div>
+
+            <div id="options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Options will be dynamically inserted here -->
+            </div>
+
+            <div id="feedback" class="mt-4 text-center font-bold h-6"></div>
+
+            <button id="next-button" onclick="nextQuestion()"
+                class="hidden w-full mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-xl transition-transform transform hover:scale-105">နောက်တစ်ပုဒ်</button>
+        </div>
+
+        <div id="result-screen" class="hidden text-center">
+            <h2 class="text-3xl font-bold text-teal-600 dark:text-teal-400 mb-4">ဂိမ်းပြီးပါပြီ!</h2>
+            <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">သင်၏နောက်ဆုံးရမှတ်မှာ</p>
+            <p id="final-score" class="text-6xl font-bold my-4"></p>
+            <p id="final-message" class="text-lg mb-8"></p>
+            <button onclick="startGame()"
+                class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg text-xl transition-transform transform hover:scale-105">ထပ်ကစားရန်</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Verb Data with Masu Form ---
+        const verbs = [
+            { masu: "てつだいます", te: "てつだって", dictionary: "てつだう" },
+            { masu: "みます", te: "みて", dictionary: "みる" },
+            { masu: "よやくします", te: "よやくして", dictionary: "よやくする" },
+            { masu: "むかえます", te: "むかえて", dictionary: "むかえる" },
+            { masu: "よびます", te: "よんで", dictionary: "よぶ" },
+            { masu: "つれていきます", te: "つれていって", dictionary: "つれていく" },
+            { masu: "つれてきます", te: "つれてきて", dictionary: "つれてくる" },
+            { masu: "かします", te: "かして", dictionary: "かす" },
+            { masu: "かります", te: "かりて", dictionary: "かりる" },
+            { masu: "まがります", te: "まがって", dictionary: "まがる" },
+            { masu: "はなします", te: "はなして", dictionary: "はなす" },
+            { masu: "はじめます", te: "はじめて", dictionary: "はじめる" },
+            { masu: "かんがえます", te: "かんがえて", dictionary: "かんがえる" },
+            { masu: "あつめます", te: "あつめて", dictionary: "あつめる" },
+            { masu: "まちます", te: "まって", dictionary: "まつ" },
+            { masu: "たべます", te: "たべて", dictionary: "たべる" },
+            { masu: "あらいます", te: "あらって", dictionary: "あらう" },
+            { masu: "すいます", te: "すって", dictionary: "すう" },
+            { masu: "つきます", te: "ついて", dictionary: "つく" },
+            { masu: "かぶります", te: "かぶって", dictionary: "かぶる" },
+            { masu: "かいものします", te: "かいものして", dictionary: "かいものする" },
+            { masu: "とります", te: "とって", dictionary: "とる" },
+            { masu: "のぼります", te: "のぼって", dictionary: "のぼる" },
+            { masu: "かけます", te: "かけて", dictionary: "かける" },
+            { masu: "とめます", te: "とめて", dictionary: "とめる" },
+            { masu: "ひきます", te: "ひいて", dictionary: "ひく" },
+            { masu: "とまります", te: "とまって", dictionary: "とまる" },
+            { masu: "あいます", te: "あって", dictionary: "あう" },
+            { masu: "しょくじします", te: "しょくじして", dictionary: "しょくじする" },
+            { masu: "おきます", te: "おいて", dictionary: "おく" },
+            { masu: "でます", te: "でて", dictionary: "でる" },
+            { masu: "すわります", te: "すわって", dictionary: "すわる" },
+            { masu: "おもいます", te: "おもって", dictionary: "おもう" },
+            { masu: "おしえます", te: "おしえて", dictionary: "おしえる" },
+            { masu: "ならいます", te: "ならって", dictionary: "ならう" },
+            { masu: "そうじします", te: "そうじして", dictionary: "そうじする" },
+            { masu: "きをつけます", te: "きをつけて", dictionary: "きをつける" },
+            { masu: "いきます", te: "いって", dictionary: "いく" },
+            { masu: "のみます", te: "のんで", dictionary: "のむ" },
+            { masu: "しります", te: "しって", dictionary: "しる" },
+            { masu: "うたいます", te: "うたって", dictionary: "うたう" },
+            { masu: "いれます", te: "いれて", dictionary: "いれる" },
+            { masu: "けんきゅうします", te: "けんきゅうして", dictionary: "けんきゅうする" },
+            { masu: "つかれます", te: "つかれて", dictionary: "つかれる" },
+            { masu: "おくります", te: "おくって", dictionary: "おくる" },
+            { masu: "もちます", te: "もって", dictionary: "もつ" },
+            { masu: "だします", te: "だして", dictionary: "だす" },
+            { masu: "あげます", te: "あげて", dictionary: "あげる" },
+            { masu: "くれます", te: "くれて", dictionary: "くれる" },
+            { masu: "はらいます", te: "はらって", dictionary: "はらう" },
+            { masu: "おわります", te: "おわって", dictionary: "おわる" },
+            { masu: "かえります", te: "かえって", dictionary: "かえる" },
+            { masu: "かえします", te: "かえして", dictionary: "かえす" },
+            { masu: "のりかえます", te: "のりかえて", dictionary: "のりかえる" },
+            { masu: "します", te: "して", dictionary: "する" },
+            { masu: "つくります", te: "つくって", dictionary: "つくる" },
+            { masu: "しゅうりします", te: "しゅうりして", dictionary: "しゅうりする" },
+            { masu: "いいます", te: "いって", dictionary: "いう" },
+            { masu: "きります", te: "きって", dictionary: "きる" },
+            { masu: "わたります", te: "わたって", dictionary: "わたる" },
+            { masu: "なります", te: "なって", dictionary: "なる" },
+            { masu: "よみます", te: "よんで", dictionary: "よむ" },
+            { masu: "わすれます", te: "わすれて", dictionary: "わすれる" },
+            { masu: "たちます", te: "たって", dictionary: "たつ" },
+            { masu: "うんてんします", te: "うんてんして", dictionary: "うんてんする" },
+            { masu: "けします", te: "けして", dictionary: "けす" },
+            { masu: "つけます", te: "つけて", dictionary: "つける" },
+            { masu: "しょうかいします", te: "しょうかいして", dictionary: "しょうかいする" },
+            { masu: "コピーします", te: "コピーして", dictionary: "コピーする" },
+            { masu: "うまれます", te: "うまれて", dictionary: "うまれる" },
+            { masu: "おぼえます", te: "おぼえて", dictionary: "おぼえる" },
+            { masu: "もっていきます", te: "もっていって", dictionary: "もっていく" },
+            { masu: "もってきます", te: "もってきて", dictionary: "もってくる" },
+            { masu: "もらいます", te: "もらって", dictionary: "もらう" },
+            { masu: "およぎます", te: "およいで", dictionary: "およぐ" },
+            { masu: "あびます", te: "あびて", dictionary: "あびる" },
+            { masu: "かきます", te: "かいて", dictionary: "かく" },
+            { masu: "うります", te: "うって", dictionary: "うる" },
+            { masu: "のります", te: "のって", dictionary: "のる" },
+            { masu: "おります", te: "おりて", dictionary: "おりる" },
+            { masu: "ふります", te: "ふって", dictionary: "ふる" },
+            { masu: "しらべます", te: "しらべて", dictionary: "しらべる" },
+            { masu: "あります", te: "あって", dictionary: "ある" },
+            { masu: "います", te: "いて", dictionary: "いる" },
+            { masu: "まけます", te: "まけて", dictionary: "まける" },
+            { masu: "あるきます", te: "あるいて", dictionary: "あるく" },
+            { masu: "きます", te: "きて", dictionary: "くる" },
+            { masu: "あんないします", te: "あんないして", dictionary: "あんないする" },
+            { masu: "かえます", te: "かえて", dictionary: "かえる" },
+            { masu: "べんきょうします", te: "べんきょうして", dictionary: "べんきょうする" },
+            { masu: "いそぎます", te: "いそいで", dictionary: "いそぐ" },
+            { masu: "すてます", te: "すてて", dictionary: "すてる" },
+            { masu: "かいます", te: "かって", dictionary: "かう" },
+            { masu: "はいります", te: "はいって", dictionary: "はいる" },
+            { masu: "きます", te: "きて", dictionary: "きる" }, // This is "to wear"
+            { masu: "はきます", te: "はいて", dictionary: "はく" },
+            { masu: "やすみます", te: "やすんで", dictionary: "やすむ" },
+            { masu: "ざんぎょうします", te: "ざんぎょうして", dictionary: "ざんぎょうする" },
+            { masu: "はたらきます", te: "はたらいて", dictionary: "はたらく" },
+            { masu: "つかいます", te: "つかって", dictionary: "つかう" },
+            { masu: "でかけます", te: "でかけて", dictionary: "でかける" },
+            { masu: "せんたくします", te: "せんたくして", dictionary: "せんたくする" },
+            { masu: "ねます", te: "ねて", dictionary: "ねる" },
+            { masu: "おきます", te: "おきて", dictionary: "おきる" }
+        ];
+
+        // --- Game State ---
+        let score = 0;
+        let currentQuestionIndex = 0;
+        let shuffledVerbs = [];
+        let currentQuestion = {};
+        const TOTAL_QUESTIONS = 10;
+
+        // --- DOM Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionEl = document.getElementById('question');
+        const questionTypeEl = document.getElementById('question-type');
+        const optionsEl = document.getElementById('options');
+        const scoreEl = document.getElementById('score');
+        const questionCounterEl = document.getElementById('question-counter');
+        const feedbackEl = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-button');
+        const finalScoreEl = document.getElementById('final-score');
+        const finalMessageEl = document.getElementById('final-message');
+
+        // --- Functions ---
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startGame() {
+            score = 0;
+            currentQuestionIndex = 0;
+            shuffledVerbs = [...verbs];
+            shuffleArray(shuffledVerbs);
+
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            feedbackEl.textContent = '';
+            nextButton.classList.add('hidden');
+            optionsEl.innerHTML = '';
+
+            if (currentQuestionIndex >= TOTAL_QUESTIONS) {
+                showResult();
+                return;
+            }
+
+            currentQuestion = shuffledVerbs[currentQuestionIndex];
+            const isTeFormQuestion = Math.random() < 0.5;
+            const questionFormType = isTeFormQuestion ? 'te' : 'dictionary';
+            const correctAnswer = currentQuestion[questionFormType];
+
+            questionEl.textContent = currentQuestion.masu;
+            questionTypeEl.textContent = `မှန်ကန်သော (${questionFormType === 'te' ? 'て形' : '辞書形'}) ကိုရွေးပါ`;
+            scoreEl.textContent = `Score: ${score}`;
+            questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} / ${TOTAL_QUESTIONS}`;
+
+            const options = [correctAnswer];
+            while (options.length < 4) {
+                const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
+                const randomForm = randomVerb[questionFormType];
+                if (!options.includes(randomForm)) {
+                    options.push(randomForm);
+                }
+            }
+            shuffleArray(options);
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('w-full', 'p-4', 'rounded-lg', 'text-lg', 'font-semibold', 'transition-all', 'duration-200', 'bg-slate-200', 'dark:bg-slate-600', 'hover:bg-teal-200', 'dark:hover:bg-teal-500', 'transform', 'hover:scale-105');
+                button.onclick = () => selectAnswer(option, correctAnswer, button);
+                optionsEl.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption, correctAnswer, selectedButton) {
+            const allButtons = optionsEl.querySelectorAll('button');
+            allButtons.forEach(btn => btn.disabled = true);
+
+            if (selectedOption === correctAnswer) {
+                score++;
+                feedbackEl.textContent = 'အဖြေမှန်ပါတယ်!';
+                feedbackEl.classList.add('text-green-500');
+                feedbackEl.classList.remove('text-red-500');
+                selectedButton.classList.add('correct');
+            } else {
+                feedbackEl.textContent = `အဖြေမှားပါတယ်! အဖြေမှန်မှာ: ${correctAnswer}`;
+                feedbackEl.classList.add('text-red-500');
+                feedbackEl.classList.remove('text-green-500');
+                selectedButton.classList.add('incorrect');
+                allButtons.forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+            scoreEl.textContent = `Score: ${score}`;
+            nextButton.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        function showResult() {
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            finalScoreEl.textContent = `${score} / ${TOTAL_QUESTIONS}`;
+
+            let message = '';
+            const percentage = (score / TOTAL_QUESTIONS) * 100;
+            if (percentage === 100) {
+                message = 'Perfect! သင်ဟာ ဂျပန်ကြိယာပုံစံပြောင်းလဲခြင်းမှာ ကျွမ်းကျင်နေပါပြီ။';
+            } else if (percentage >= 70) {
+                message = 'အရမ်းကောင်းပါတယ်။ ဒီအတိုင်း ဆက်ကြိုးစားသွားပါ။';
+            } else if (percentage >= 50) {
+                message = 'ကောင်းပါတယ်။ ဒါပေမယ့် ထပ်လေ့လာဖို့ လိုပါသေးတယ်။';
+            } else {
+                message = 'နည်းနည်း 더 လေ့လာဖို့ လိုမယ်နော်။ အားမလျှော့ပါနဲ့။';
+            }
+            finalMessageEl.textContent = message;
+        }
+
+    </script>
+</body>
+
+</html>
