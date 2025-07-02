@@ -70,18 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (group === 1) {
             const i_line = { 'う': 'い', 'く': 'き', 'ぐ': 'ぎ', 'す': 'し', 'つ': 'ち', 'ぬ': 'に', 'ぶ': 'び', 'む': 'み', 'る': 'り' };
             const lastChar = jisho.slice(-1);
-            if (jisho === 'いく') return 'いきます'; // Special case, but follows pattern
+            if (jisho === 'いく') return 'いきます';
             return jisho.slice(0, -1) + i_line[lastChar] + 'ます';
         }
         return jisho;
     };
-    const getTaForm = (te) => {
-        if (te.endsWith('て')) return te.slice(0, -1) + 'た';
-        if (te.endsWith('で')) return te.slice(0, -1) + 'だ';
-        return te;
-    };
+    const getTaForm = te => te.endsWith('て') ? te.slice(0, -1) + 'た' : te.slice(0, -1) + 'だ';
     const getNaiForm = (jisho, group) => {
-        if (jisho === 'ある') return 'ない'; // special case
+        if (jisho === 'ある') return 'ない';
         if (group === 3) {
             if (jisho.endsWith('する')) return jisho.slice(0, -2) + 'しない';
             if (jisho.endsWith('くる')) return jisho.slice(0, -2) + 'こない';
@@ -95,51 +91,144 @@ document.addEventListener('DOMContentLoaded', () => {
         return jisho;
     };
 
-    // --- DATA PREPARATION ---
-    const verbs = rawVerbData.map(v => {
-        const group = getVerbGroup(v.jisho, v.te);
-        return {
-            ...v,
-            group: group,
-            masu: getMasuForm(v.jisho, group),
-            ta: getTaForm(v.te),
-            nai: getNaiForm(v.jisho, group),
-        };
-    });
-
     // --- DOM ELEMENTS ---
-    const screens = {
-        start: document.getElementById('start-screen'),
-        challengeSelection: document.getElementById('challenge-selection-screen'),
-        quiz: document.getElementById('quiz-screen'),
-        result: document.getElementById('result-screen'),
-    };
-    const startButton = document.getElementById('start-button');
-    const playAgainButton = document.getElementById('play-again-button');
-    const challengeButtons = document.querySelectorAll('.challenge-btn');
-    const timerDisplay = document.querySelector('#timer span');
-    const scoreDisplay = document.querySelector('#score span');
-    const finalScoreDisplay = document.getElementById('final-score');
-
-    const promptText = document.getElementById('prompt-text');
-    const questionVerb = document.getElementById('question-verb');
-    const questionBurmese = document.getElementById('question-burmese');
+    const screens = { dojo: document.getElementById('dojo-screen'), training: document.getElementById('training-screen') };
+    const dojoGrid = document.getElementById('verb-dojo-grid');
+    const masteredCountEl = document.getElementById('mastered-count');
+    const backToDojoBtn = document.getElementById('back-to-dojo-btn');
+    const trainingVerbJishoEl = document.getElementById('training-verb-jisho');
+    const promptTextEl = document.getElementById('prompt-text');
     const answerForm = document.getElementById('answer-form');
     const answerInput = document.getElementById('answer-input');
-    const idkButton = document.getElementById('idk-button');
-
+    const masteredNotification = document.getElementById('mastered-notification');
+    const masteredVerbText = document.getElementById('mastered-verb-text');
+    const resetProgressButton = document.getElementById('reset-progress-button');
     const correctSound = document.getElementById('correct-sound');
     const incorrectSound = document.getElementById('incorrect-sound');
 
     // --- GAME STATE ---
-    let score = 0, timer, timeLeft = 90;
-    let shuffledVerbs, currentQuestionIndex = 0;
-    let isAnswering = false;
-    let currentGameMode = '';
-    let currentCorrectAnswer = '';
-    const challengeModes = ['te', 'ta', 'nai', 'jisho'];
+    let verbs = [];
+    let currentTrainingVerb = null;
+    let trainingQueue = [];
+    const TOTAL_MASTERY = 4; // te, ta, nai, masu
 
     // --- FUNCTIONS ---
+    function init() {
+        loadProgress();
+        renderDojo();
+        addEventListeners();
+    }
+
+    function loadProgress() {
+        const savedProgress = localStorage.getItem('verbDojoProgress');
+        if (savedProgress) {
+            verbs = JSON.parse(savedProgress);
+        } else {
+            verbs = rawVerbData.map(v => {
+                const group = getVerbGroup(v.jisho, v.te);
+                return { ...v, group, masu: getMasuForm(v.jisho, group), ta: getTaForm(v.te), nai: getNaiForm(v.jisho, group), mastery: 0 };
+            });
+        }
+    }
+
+    function saveProgress() {
+        localStorage.setItem('verbDojoProgress', JSON.stringify(verbs));
+    }
+
+    function renderDojo() {
+        dojoGrid.innerHTML = '';
+        let masteredCount = 0;
+        verbs.forEach(verb => {
+            const item = document.createElement('div');
+            item.className = 'verb-item';
+            item.dataset.jisho = verb.jisho;
+            if (verb.mastery >= TOTAL_MASTERY) {
+                item.classList.add('mastered');
+                masteredCount++;
+            }
+            item.innerHTML = `
+                <div class="verb-name">${verb.jisho}</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: ${(verb.mastery / TOTAL_MASTERY) * 100}%"></div>
+                </div>
+            `;
+            item.addEventListener('click', () => startTraining(verb.jisho));
+            dojoGrid.appendChild(item);
+        });
+        masteredCountEl.textContent = masteredCount;
+    }
+
+    function startTraining(jisho) {
+        currentTrainingVerb = verbs.find(v => v.jisho === jisho);
+        if (currentTrainingVerb.mastery >= TOTAL_MASTERY) return; // Already mastered
+
+        trainingQueue = ['te', 'ta', 'nai', 'masu'].sort(() => Math.random() - 0.5);
+
+        switchScreen('training');
+        askNextTrainingQuestion();
+    }
+
+    function askNextTrainingQuestion() {
+        if (trainingQueue.length === 0) {
+            // Training session for this verb is over
+            switchScreen('dojo');
+            return;
+        }
+
+        const formToAsk = trainingQueue[0]; // Peek at the next question
+        trainingVerbJishoEl.textContent = currentTrainingVerb.jisho;
+        let prompt = '';
+        switch (formToAsk) {
+            case 'te': prompt = `「て形」は何ですか？`; break;
+            case 'ta': prompt = `「た形」は何ですか？`; break;
+            case 'nai': prompt = `「ない形」は何ですか？`; break;
+            case 'masu': prompt = `「ます形」は何ですか？`; break;
+        }
+        promptTextEl.textContent = prompt;
+        answerInput.value = '';
+        answerInput.classList.remove('correct', 'incorrect');
+        answerInput.focus();
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        const formToAsk = trainingQueue[0];
+        const correctAnswer = currentTrainingVerb[formToAsk];
+        const userAnswer = answerInput.value.trim();
+
+        if (userAnswer === correctAnswer) {
+            playSound(correctSound);
+            answerInput.classList.add('correct');
+            trainingQueue.shift(); // Remove the question from the queue
+
+            // Update mastery if this is the first time getting it right in this session
+            if (!currentTrainingVerb.sessionProgress || !currentTrainingVerb.sessionProgress.includes(formToAsk)) {
+                currentTrainingVerb.mastery = (currentTrainingVerb.mastery || 0) + 1;
+                if (!currentTrainingVerb.sessionProgress) currentTrainingVerb.sessionProgress = [];
+                currentTrainingVerb.sessionProgress.push(formToAsk);
+            }
+
+            saveProgress();
+            renderDojo(); // Update in the background
+
+            if (currentTrainingVerb.mastery === TOTAL_MASTERY) {
+                showMasteredNotification(currentTrainingVerb.jisho);
+            }
+
+            setTimeout(askNextTrainingQuestion, 800);
+        } else {
+            playSound(incorrectSound);
+            answerInput.classList.add('incorrect');
+            setTimeout(() => answerInput.classList.remove('incorrect'), 500);
+        }
+    }
+
+    function showMasteredNotification(verb) {
+        masteredVerbText.textContent = verb;
+        masteredNotification.classList.remove('hidden');
+        setTimeout(() => masteredNotification.classList.add('hidden'), 3000);
+    }
+
     function switchScreen(screenName) {
         Object.values(screens).forEach(s => s.classList.remove('active'));
         screens[screenName].classList.add('active');
@@ -150,113 +239,21 @@ document.addEventListener('DOMContentLoaded', () => {
         sound.play();
     }
 
-    function startGame(mode) {
-        currentGameMode = mode;
-        score = 0;
-        timeLeft = 90;
-        currentQuestionIndex = 0;
-        scoreDisplay.textContent = score;
-        timerDisplay.textContent = timeLeft;
-
-        shuffledVerbs = [...verbs].sort(() => Math.random() - 0.5);
-
-        switchScreen('quiz');
-        showNextQuestion();
-
-        clearInterval(timer);
-        timer = setInterval(() => {
-            timeLeft--;
-            timerDisplay.textContent = timeLeft;
-            if (timeLeft <= 0) endGame();
-        }, 1000);
+    function addEventListeners() {
+        backToDojoBtn.addEventListener('click', () => switchScreen('dojo'));
+        answerForm.addEventListener('submit', handleSubmit);
+        resetProgressButton.addEventListener('click', () => {
+            if (confirm('本当にすべての進捗をリセットしますか？\n(Progress အားလုံးကို တကယ်ဖျက်မှာလား?)')) {
+                localStorage.removeItem('verbDojoProgress');
+                verbs.forEach(v => {
+                    v.mastery = 0;
+                    delete v.sessionProgress;
+                });
+                renderDojo();
+            }
+        });
     }
 
-    function showNextQuestion() {
-        if (currentQuestionIndex >= shuffledVerbs.length) {
-            endGame();
-            return;
-        }
-        isAnswering = false;
-        const currentVerb = shuffledVerbs[currentQuestionIndex];
-        let mode = currentGameMode;
-        if (mode === 'mixed') {
-            mode = challengeModes[Math.floor(Math.random() * challengeModes.length)];
-        }
-
-        switch (mode) {
-            case 'te':
-                promptText.textContent = "「ます形」を「て形」にしてください";
-                questionVerb.textContent = currentVerb.masu;
-                currentCorrectAnswer = currentVerb.te;
-                break;
-            case 'ta':
-                promptText.textContent = "「辞書形」を「た形」にしてください";
-                questionVerb.textContent = currentVerb.jisho;
-                currentCorrectAnswer = currentVerb.ta;
-                break;
-            case 'nai':
-                promptText.textContent = "「辞書形」を「ない形」にしてください";
-                questionVerb.textContent = currentVerb.jisho;
-                currentCorrectAnswer = currentVerb.nai;
-                break;
-            case 'jisho':
-                promptText.textContent = "「ます形」を「辞書形」にしてください";
-                questionVerb.textContent = currentVerb.masu;
-                currentCorrectAnswer = currentVerb.jisho;
-                break;
-        }
-
-        questionBurmese.textContent = currentVerb.burmese;
-        answerInput.value = '';
-        answerInput.classList.remove('correct', 'incorrect');
-        answerInput.focus();
-    }
-
-    function handleSubmit(event) {
-        event.preventDefault();
-        if (isAnswering) return;
-
-        const userAnswer = answerInput.value.trim();
-        if (userAnswer === currentCorrectAnswer) {
-            isAnswering = true;
-            score++;
-            scoreDisplay.textContent = score;
-            playSound(correctSound);
-            answerInput.classList.add('correct');
-            setTimeout(() => {
-                currentQuestionIndex++;
-                showNextQuestion();
-            }, 800);
-        } else {
-            playSound(incorrectSound);
-            answerInput.classList.add('incorrect');
-            setTimeout(() => answerInput.classList.remove('incorrect'), 500);
-        }
-    }
-
-    function showAnswer() {
-        if (isAnswering) return;
-        isAnswering = true;
-        answerInput.value = currentCorrectAnswer;
-        answerInput.classList.add('correct');
-        setTimeout(() => {
-            currentQuestionIndex++;
-            showNextQuestion();
-        }, 1200);
-    }
-
-    function endGame() {
-        clearInterval(timer);
-        finalScoreDisplay.textContent = score;
-        switchScreen('result');
-    }
-
-    // --- EVENT LISTENERS ---
-    startButton.addEventListener('click', () => switchScreen('challengeSelection'));
-    challengeButtons.forEach(button => {
-        button.addEventListener('click', () => startGame(button.dataset.mode));
-    });
-    playAgainButton.addEventListener('click', () => switchScreen('challengeSelection'));
-    answerForm.addEventListener('submit', handleSubmit);
-    idkButton.addEventListener('click', showAnswer);
+    // --- INITIALIZE THE GAME ---
+    init();
 });
