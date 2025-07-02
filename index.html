@@ -1,55 +1,65 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N5 Verb Sorter Game</title>
+    <title>N5 動詞活用クイズ (N5 Verb Quiz)</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700&family=Yusei+Magic&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div class="game-container">
-        <header>
-            <h1>動詞 分別 ゲーム</h1>
-            <p>N5 Verb Sorter</p>
-        </header>
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>N5 動詞活用クイズ</h1>
+            <p>ます形を見て、正しい「て形」と「辞書形」を選んでください。</p>
+            <p class="lang-mm">ます Form ကိုကြည့်ပြီး မှန်ကန်သော て Form နှင့် 辞書形 ကိုရွေးချယ်ပါ။</p>
+            <button id="start-button" class="btn">ゲーム開始 (Game စတင်ရန်)</button>
+        </div>
 
-        <div id="score-board">
-            <span>Score: <span id="score">0</span></span>
-            <div class="progress-bar-container">
-                <div id="progress-bar"></div>
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div id="progress-container">
+                <div id="progress-text"></div>
+                <div id="progress-bar-full">
+                    <div id="progress-bar"></div>
+                </div>
             </div>
-            <span><span id="question-count">1</span> / 15</span>
-        </div>
 
-        <div id="verb-source-area">
-            <div id="draggable-verb" draggable="true">
-                <!-- Verb will be loaded here -->
+            <div id="question-card">
+                <p class="question-label">ます形 (Masu Form)</p>
+                <h2 id="question-masu"></h2>
+                <p id="question-burmese" class="lang-mm"></p>
             </div>
-        </div>
 
-        <div id="drop-zones-container">
-            <!-- Drop zones will be generated here -->
-        </div>
-
-        <div id="feedback-panel" class="hidden">
-            <div id="feedback-content">
-                <h3 id="feedback-dict"></h3>
-                <p id="feedback-te"></p>
-                <p id="feedback-burmese"></p>
-                <button id="next-btn">နောက်တစ်ခု →</button>
+            <div class="answer-section">
+                <h3>て形 (Te Form)</h3>
+                <div id="te-form-options" class="options-grid"></div>
             </div>
+
+            <div class="answer-section">
+                <h3>辞書形 (Dictionary Form)</h3>
+                <div id="jisho-form-options" class="options-grid"></div>
+            </div>
+            
+            <button id="next-button" class="btn hidden">次へ (နောက်တစ်ခု)</button>
         </div>
 
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <h1>クイズ終了！</h1>
+            <h2 id="final-score"></h2>
+            <p id="result-message"></p>
+            <button id="play-again-button" class="btn">もう一度 (ထပ်ကစားရန်)</button>
+        </div>
     </div>
 
-    <footer>
-        <p>Created By Win Paing</p>
-    </footer>
+    <audio id="correct-sound" src="assets/correct.mp3"></audio>
+    <audio id="incorrect-sound" src="assets/incorrect.mp3"></audio>
 
     <script src="script.js"></script>
 </body>
