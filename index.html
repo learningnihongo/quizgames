@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ဂျပန်ကြိယာပုံစံပြောင်း Quiz Game</title>
+    <title>ဂျပန်ဝေါဟာရ Quiz Game (မြန်မာ)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -69,24 +69,25 @@
         class="w-full max-w-2xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 transition-all duration-500">
 
         <div id="start-screen">
-            <h1 class="text-3xl md:text-4xl font-bold text-center text-teal-600 dark:text-teal-400 mb-4">
-                ဂျပန်ကြိယာပုံစံပြောင်း Quiz</h1>
-            <p class="text-center text-slate-600 dark:text-slate-400 mb-8">ပေးထားသော `ます` form အတွက် မှန်ကန်သော `て` form
-                သို့မဟုတ် `辞書形` ကို ရွေးချယ်ပါ။</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-indigo-600 dark:text-indigo-400 mb-4">ဂျပန်ကြိယာ
+                Quiz</h1>
+            <p class="text-center text-slate-600 dark:text-slate-400 mb-8">ပေးထားသော မြန်မာစကားလုံးအတွက် မှန်ကန်သော `て`
+                form သို့မဟုတ် `辞書形` ကို ရွေးချယ်ပါ။</p>
             <button onclick="startGame()"
-                class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg text-xl transition-transform transform hover:scale-105">ဂိမ်းစရန်</button>
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-xl transition-transform transform hover:scale-105">ဂိမ်းစရန်</button>
         </div>
 
         <div id="game-screen" class="hidden">
             <div class="flex justify-between items-center mb-4">
                 <div id="question-counter" class="text-sm font-semibold text-slate-500"></div>
-                <div id="score" class="text-lg font-bold text-teal-600 dark:text-teal-400">Score: 0</div>
+                <div id="score" class="text-lg font-bold text-indigo-600 dark:text-indigo-400">Score: 0</div>
             </div>
 
             <div class="bg-slate-100 dark:bg-slate-700 p-6 rounded-lg mb-6">
-                <p class="text-center text-slate-600 dark:text-slate-300 mb-2">အောက်ပါ `ます` form ၏</p>
+                <p class="text-center text-slate-600 dark:text-slate-300 mb-2">အောက်ပါစကားလုံး၏ ဂျပန်ပုံစံမှာ အဘယ်နည်း။
+                </p>
                 <h2 id="question" class="text-4xl md:text-5xl font-bold text-center"></h2>
-                <p id="question-type" class="text-center text-teal-500 dark:text-teal-400 font-semibold mt-2"></p>
+                <p id="question-type" class="text-center text-indigo-500 dark:text-indigo-400 font-semibold mt-2"></p>
             </div>
 
             <div id="options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -100,122 +101,124 @@
         </div>
 
         <div id="result-screen" class="hidden text-center">
-            <h2 class="text-3xl font-bold text-teal-600 dark:text-teal-400 mb-4">ဂိမ်းပြီးပါပြီ!</h2>
+            <h2 class="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-4">ဂိမ်းပြီးပါပြီ!</h2>
             <p class="text-xl text-slate-600 dark:text-slate-400 mb-2">သင်၏နောက်ဆုံးရမှတ်မှာ</p>
             <p id="final-score" class="text-6xl font-bold my-4"></p>
             <p id="final-message" class="text-lg mb-8"></p>
             <button onclick="startGame()"
-                class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg text-xl transition-transform transform hover:scale-105">ထပ်ကစားရန်</button>
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-xl transition-transform transform hover:scale-105">ထပ်ကစားရန်</button>
         </div>
     </div>
 
     <script>
-        // --- Verb Data with Masu Form ---
+        // --- Verb Data from the user's new file ---
         const verbs = [
-            { masu: "てつだいます", te: "てつだって", dictionary: "てつだう" },
-            { masu: "みます", te: "みて", dictionary: "みる" },
-            { masu: "よやくします", te: "よやくして", dictionary: "よやくする" },
-            { masu: "むかえます", te: "むかえて", dictionary: "むかえる" },
-            { masu: "よびます", te: "よんで", dictionary: "よぶ" },
-            { masu: "つれていきます", te: "つれていって", dictionary: "つれていく" },
-            { masu: "つれてきます", te: "つれてきて", dictionary: "つれてくる" },
-            { masu: "かします", te: "かして", dictionary: "かす" },
-            { masu: "かります", te: "かりて", dictionary: "かりる" },
-            { masu: "まがります", te: "まがって", dictionary: "まがる" },
-            { masu: "はなします", te: "はなして", dictionary: "はなす" },
-            { masu: "はじめます", te: "はじめて", dictionary: "はじめる" },
-            { masu: "かんがえます", te: "かんがえて", dictionary: "かんがえる" },
-            { masu: "あつめます", te: "あつめて", dictionary: "あつめる" },
-            { masu: "まちます", te: "まって", dictionary: "まつ" },
-            { masu: "たべます", te: "たべて", dictionary: "たべる" },
-            { masu: "あらいます", te: "あらって", dictionary: "あらう" },
-            { masu: "すいます", te: "すって", dictionary: "すう" },
-            { masu: "つきます", te: "ついて", dictionary: "つく" },
-            { masu: "かぶります", te: "かぶって", dictionary: "かぶる" },
-            { masu: "かいものします", te: "かいものして", dictionary: "かいものする" },
-            { masu: "とります", te: "とって", dictionary: "とる" },
-            { masu: "のぼります", te: "のぼって", dictionary: "のぼる" },
-            { masu: "かけます", te: "かけて", dictionary: "かける" },
-            { masu: "とめます", te: "とめて", dictionary: "とめる" },
-            { masu: "ひきます", te: "ひいて", dictionary: "ひく" },
-            { masu: "とまります", te: "とまって", dictionary: "とまる" },
-            { masu: "あいます", te: "あって", dictionary: "あう" },
-            { masu: "しょくじします", te: "しょくじして", dictionary: "しょくじする" },
-            { masu: "おきます", te: "おいて", dictionary: "おく" },
-            { masu: "でます", te: "でて", dictionary: "でる" },
-            { masu: "すわります", te: "すわって", dictionary: "すわる" },
-            { masu: "おもいます", te: "おもって", dictionary: "おもう" },
-            { masu: "おしえます", te: "おしえて", dictionary: "おしえる" },
-            { masu: "ならいます", te: "ならって", dictionary: "ならう" },
-            { masu: "そうじします", te: "そうじして", dictionary: "そうじする" },
-            { masu: "きをつけます", te: "きをつけて", dictionary: "きをつける" },
-            { masu: "いきます", te: "いって", dictionary: "いく" },
-            { masu: "のみます", te: "のんで", dictionary: "のむ" },
-            { masu: "しります", te: "しって", dictionary: "しる" },
-            { masu: "うたいます", te: "うたって", dictionary: "うたう" },
-            { masu: "いれます", te: "いれて", dictionary: "いれる" },
-            { masu: "けんきゅうします", te: "けんきゅうして", dictionary: "けんきゅうする" },
-            { masu: "つかれます", te: "つかれて", dictionary: "つかれる" },
-            { masu: "おくります", te: "おくって", dictionary: "おくる" },
-            { masu: "もちます", te: "もって", dictionary: "もつ" },
-            { masu: "だします", te: "だして", dictionary: "だす" },
-            { masu: "あげます", te: "あげて", dictionary: "あげる" },
-            { masu: "くれます", te: "くれて", dictionary: "くれる" },
-            { masu: "はらいます", te: "はらって", dictionary: "はらう" },
-            { masu: "おわります", te: "おわって", dictionary: "おわる" },
-            { masu: "かえります", te: "かえって", dictionary: "かえる" },
-            { masu: "かえします", te: "かえして", dictionary: "かえす" },
-            { masu: "のりかえます", te: "のりかえて", dictionary: "のりかえる" },
-            { masu: "します", te: "して", dictionary: "する" },
-            { masu: "つくります", te: "つくって", dictionary: "つくる" },
-            { masu: "しゅうりします", te: "しゅうりして", dictionary: "しゅうりする" },
-            { masu: "いいます", te: "いって", dictionary: "いう" },
-            { masu: "きります", te: "きって", dictionary: "きる" },
-            { masu: "わたります", te: "わたって", dictionary: "わたる" },
-            { masu: "なります", te: "なって", dictionary: "なる" },
-            { masu: "よみます", te: "よんで", dictionary: "よむ" },
-            { masu: "わすれます", te: "わすれて", dictionary: "わすれる" },
-            { masu: "たちます", te: "たって", dictionary: "たつ" },
-            { masu: "うんてんします", te: "うんてんして", dictionary: "うんてんする" },
-            { masu: "けします", te: "けして", dictionary: "けす" },
-            { masu: "つけます", te: "つけて", dictionary: "つける" },
-            { masu: "しょうかいします", te: "しょうかいして", dictionary: "しょうかいする" },
-            { masu: "コピーします", te: "コピーして", dictionary: "コピーする" },
-            { masu: "うまれます", te: "うまれて", dictionary: "うまれる" },
-            { masu: "おぼえます", te: "おぼえて", dictionary: "おぼえる" },
-            { masu: "もっていきます", te: "もっていって", dictionary: "もっていく" },
-            { masu: "もってきます", te: "もってきて", dictionary: "もってくる" },
-            { masu: "もらいます", te: "もらって", dictionary: "もらう" },
-            { masu: "およぎます", te: "およいで", dictionary: "およぐ" },
-            { masu: "あびます", te: "あびて", dictionary: "あびる" },
-            { masu: "かきます", te: "かいて", dictionary: "かく" },
-            { masu: "うります", te: "うって", dictionary: "うる" },
-            { masu: "のります", te: "のって", dictionary: "のる" },
-            { masu: "おります", te: "おりて", dictionary: "おりる" },
-            { masu: "ふります", te: "ふって", dictionary: "ふる" },
-            { masu: "しらべます", te: "しらべて", dictionary: "しらべる" },
-            { masu: "あります", te: "あって", dictionary: "ある" },
-            { masu: "います", te: "いて", dictionary: "いる" },
-            { masu: "まけます", te: "まけて", dictionary: "まける" },
-            { masu: "あるきます", te: "あるいて", dictionary: "あるく" },
-            { masu: "きます", te: "きて", dictionary: "くる" },
-            { masu: "あんないします", te: "あんないして", dictionary: "あんないする" },
-            { masu: "かえます", te: "かえて", dictionary: "かえる" },
-            { masu: "べんきょうします", te: "べんきょうして", dictionary: "べんきょうする" },
-            { masu: "いそぎます", te: "いそいで", dictionary: "いそぐ" },
-            { masu: "すてます", te: "すてて", dictionary: "すてる" },
-            { masu: "かいます", te: "かって", dictionary: "かう" },
-            { masu: "はいります", te: "はいって", dictionary: "はいる" },
-            { masu: "きます", te: "きて", dictionary: "きる" }, // This is "to wear"
-            { masu: "はきます", te: "はいて", dictionary: "はく" },
-            { masu: "やすみます", te: "やすんで", dictionary: "やすむ" },
-            { masu: "ざんぎょうします", te: "ざんぎょうして", dictionary: "ざんぎょうする" },
-            { masu: "はたらきます", te: "はたらいて", dictionary: "はたらく" },
-            { masu: "つかいます", te: "つかって", dictionary: "つかう" },
-            { masu: "でかけます", te: "でかけて", dictionary: "でかける" },
-            { masu: "せんたくします", te: "せんたくして", dictionary: "せんたくする" },
-            { masu: "ねます", te: "ねて", dictionary: "ねる" },
-            { masu: "おきます", te: "おきて", dictionary: "おきる" }
+            { burmese: "ကူညီသည်", te: "てつだって", dictionary: "てつだう" },
+            { burmese: "ကြည့်သည်။မြင်သည်။", te: "みて", dictionary: "みる" },
+            { burmese: "ကြိုတင်မှာသည်", te: "よやくして", dictionary: "よやくする" },
+            { burmese: "ကြိုဆိုသည်", te: "むかえて", dictionary: "むかえる" },
+            { burmese: "ခေါ်သည်", te: "よんで", dictionary: "よぶ" },
+            { burmese: "ခေါ်သွားသည်", te: "つれていって", dictionary: "つれていく" },
+            { burmese: "ခေါ်လာသည်", te: "つれてきて", dictionary: "つれてくる" },
+            { burmese: "ချေးဌားသည်", te: "かして", dictionary: "かす" },
+            { burmese: "ချေးယူသည်", te: "かりて", dictionary: "かりる" },
+            { burmese: "ချိုးကွေ့သည်", te: "まがって", dictionary: "まがる" },
+            { burmese: "စကားပြောသည်", te: "はなして", dictionary: "はなす" },
+            { burmese: "စတင်သည်", te: "はじめて", dictionary: "はじめる" },
+            { burmese: "စဉ်းစားသည်", te: "かんがえて", dictionary: "かんがえる" },
+            { burmese: "စုဆောင်းသည်", te: "あつめて", dictionary: "あつめる" },
+            { burmese: "စောင့်သည်", te: "まって", dictionary: "まつ" },
+            { burmese: "စားသည်", te: "たべて", dictionary: "たべる" },
+            { burmese: "ဆေးကြောသည်", te: "あらって", dictionary: "あらう" },
+            { burmese: "ဆေးလိပ်သောက်သည်", te: "すって", dictionary: "すう" },
+            { burmese: "ဆိုက်ရောက်သည်", te: "ついて", dictionary: "つく" },
+            { burmese: "ဆောင်းသည်။(ဦးထုပ်ကို)", te: "かぶって", dictionary: "かぶる" },
+            { burmese: "ဈေးဝယ်သည်", te: "かいものして", dictionary: "かいものする" },
+            { burmese: "ဓာတ်ပုံရိုက်သည်", te: "とって", dictionary: "とる" },
+            { burmese: "တက်သည်", te: "のぼって", dictionary: "のぼる" },
+            { burmese: "တပ်သည်၊ချိတ်သည်(မျက်မှန်ကို)", te: "かけて", dictionary: "かける" },
+            { burmese: "တားသည်။ရပ်သည်။", te: "とめて", dictionary: "とめる" },
+            { burmese: "တီးခတ်သည်", te: "ひいて", dictionary: "ひく" },
+            { burmese: "တည်းခိုသည်", te: "とまって", dictionary: "とまる" },
+            { burmese: "တွေ့သည်", te: "あって", dictionary: "あう" },
+            { burmese: "ထမင်းစားသည်", te: "しょくじして", dictionary: "しょくじする" },
+            { burmese: "ထားသည်", te: "おいて", dictionary: "おく" },
+            { burmese: "ထွက်သည်", te: "でて", dictionary: "でる" },
+            { burmese: "ထိုင်သည်", te: "すわって", dictionary: "すわる" },
+            { burmese: "ထင်မြင်သည်။ယူဆသည်။တွေးတောသည်", te: "おもって", dictionary: "おもう" },
+            { burmese: "သင်ပေးသည်", te: "おしえて", dictionary: "おしえる" },
+            { burmese: "သင်ယူသည်", te: "ならって", dictionary: "ならう" },
+            { burmese: "သန့်ရှင့်ရေးလုပ်သည်", te: "そうじして", dictionary: "そうじする" },
+            { burmese: "သတိထားသည်", te: "きをつけて", dictionary: "きをつける" },
+            { burmese: "သွားသည်", te: "いって", dictionary: "いく" },
+            { burmese: "သောက်သည်", te: "のんで", dictionary: "のむ" },
+            { burmese: "သိသည်", te: "しって", dictionary: "しる" },
+            { burmese: "သီချင်းဆိုသည်", te: "うたって", dictionary: "うたう" },
+            { burmese: "သွင်းသည်", te: "いれて", dictionary: "いれる" },
+            { burmese: "သုတေသနပြုလုပ်သည်", te: "けんきゅうして", dictionary: "けんきゅうする" },
+            { burmese: "ပင်ပန်းသည်", te: "つかれて", dictionary: "つかれる" },
+            { burmese: "ပို့သည်", te: "おくって", dictionary: "おくる" },
+            { burmese: "ပိုင်ဆိုင်သည်။သယ်သည်။ကိုင်ထားသည်", te: "もって", dictionary: "もつ" },
+            { burmese: "ပစ္စည်းထုတ်သည်။အစီရင်ခံစာတင်သည်။", te: "だして", dictionary: "だす" },
+            { burmese: "ပေးသည်", te: "あげて", dictionary: "あげる" },
+            { burmese: "ပေးသည် (မိမိအားပေးသည်)", te: "くれて", dictionary: "くれる" },
+            { burmese: "ပေးချေသည်", te: "はらって", dictionary: "はらう" },
+            { burmese: "ပြီးဆုံးသည်", te: "おわって", dictionary: "おわる" },
+            { burmese: "ပြန်သည်", te: "かえって", dictionary: "かえる" },
+            { burmese: "ပြန်ပေးသည်", te: "かえして", dictionary: "かえす" },
+            { burmese: "ပြောင်းစီးသည်", te: "のりかえて", dictionary: "のりかえる" },
+            { burmese: "ပြုလုပ်သည်", te: "して", dictionary: "する" },
+            { burmese: "ပြုလုပ်သည်။တည်ဆောက်သည်။", te: "つくって", dictionary: "つくる" },
+            { burmese: "ပြုပြင်သည်။ပြင်ဆင်သည်", te: "しゅうりして", dictionary: "しゅうりする" },
+            { burmese: "ပြောသည်", te: "いって", dictionary: "いう" },
+            { burmese: "ဖြတ်သည်။ညှပ်သည်", te: "きって", dictionary: "きる" },
+            { burmese: "ဖြတ်ကူးသည်", te: "わたって", dictionary: "わたる" },
+            { burmese: "ဖြစ်သည်။ဖြစ်လာသည်။ကျရောက်သည်", te: "なって", dictionary: "なる" },
+            { burmese: "ဖတ်သည်။", te: "よんで", dictionary: "よむ" },
+            { burmese: "မေ့သည်", te: "わすれて", dictionary: "わすれる" },
+            { burmese: "မတ်တပ်ရပ်သည်", te: "たって", dictionary: "たつ" },
+            { burmese: "မောင်းနှင်သည်။", te: "うんてんして", dictionary: "うんてんする" },
+            { burmese: "မီးပိတ်သည်", te: "けして", dictionary: "けす" },
+            { burmese: "မီးဖွင့်သည်", te: "つけて", dictionary: "つける" },
+            { burmese: "မိတ်ဆက်သည်", te: "しょうかいして", dictionary: "しょうかいする" },
+            { burmese: "မိတ္တူကူးသည်", te: "こぴーして", dictionary: "こぴーする" },
+            { burmese: "မွေးဖွားလာသည်", te: "うまれて", dictionary: "うまれる" },
+            { burmese: "မှတ်မိသည်။မှတ်သည်", te: "おぼえて", dictionary: "おぼえる" },
+            { burmese: "ယူသည်", te: "とって", dictionary: "とる" },
+            { burmese: "ယူသွားသည်(သက်မဲ့ပစ္စည်းတွင်သုံးသည်)", te: "もっていって", dictionary: "もっていく" },
+            { burmese: "ယူလာသည်(သက်မဲ့ပစ္စည်းတွင်သုံးသည်)", te: "もってきて", dictionary: "もってくる" },
+            { burmese: "ရသည်။ယူသည်", te: "とって", dictionary: "とる" },
+            { burmese: "ရေကူးသည်", te: "およいで", dictionary: "およぐ" },
+            { burmese: "ရေချိုးသည်", te: "あびて", dictionary: "あびる" },
+            { burmese: "ရေးသည်။", te: "かいて", dictionary: "かく" },
+            { burmese: "ရောင်းသည်", te: "うって", dictionary: "うる" },
+            { burmese: "ရထားကို စီးသည်", te: "のって", dictionary: "のる" },
+            { burmese: "ရထားပေါ်မှဆင်းသည်", te: "おりて", dictionary: "おりる" },
+            { burmese: "ရွာသည်", te: "ふって", dictionary: "ふる" },
+            { burmese: "ရှာဖွေသည်။စစ်ဆေးသည်", te: "しらべて", dictionary: "しらべる" },
+            { burmese: "ရှိသည် (သက်မဲ့)", te: "あって", dictionary: "ある" },
+            { burmese: "ရှိသည် (သက်ရှိ)", te: "いて", dictionary: "いる" },
+            { burmese: "ရှုံးနိမ့်သည်", te: "まけて", dictionary: "まける" },
+            { burmese: "လမ်းလျှောက်သည်။", te: "あるいて", dictionary: "あるく" },
+            { burmese: "လာသည်", te: "きて", dictionary: "くる" },
+            { burmese: "လိုအပ်သည်", te: "いって", dictionary: "いる" },
+            { burmese: "လိုက်လံရှင်းပြသည်", te: "あんないして", dictionary: "あんないする" },
+            { burmese: "လဲလှယ်သည်။ဖလှယ်သည်", te: "かえて", dictionary: "かえる" },
+            { burmese: "လေ့လာသည်", te: "べんきょうして", dictionary: "べんきょうする" },
+            { burmese: "လောသည်။အလျင်စလိုလုပ်သည်", te: "いそいで", dictionary: "いそぐ" },
+            { burmese: "လွှင့်ပစ်သည်", te: "すてて", dictionary: "すてる" },
+            { burmese: "ဝယ်သည်", te: "かって", dictionary: "かう" },
+            { burmese: "ဝင်သည်", te: "はいって", dictionary: "はいる" },
+            { burmese: "ဝတ်ဆင်သည်(ခါးအထက်ပိုင်း)", te: "きて", dictionary: "きる" },
+            { burmese: "ဝတ်ဆင်သည်။(ခါးအောက်ပိုင်း)", te: "はいて", dictionary: "はく" },
+            { burmese: "အနားယူသည်", te: "やすんで", dictionary: "やすむ" },
+            { burmese: "အလုပ်အချိန်ပိုဆင်းသည်", te: "ざんぎょうして", dictionary: "ざんぎょうする" },
+            { burmese: "အလုပ်လုပ်သည်", te: "はたらいて", dictionary: "はたらく" },
+            { burmese: "အသုံးပြုသည်", te: "つかって", dictionary: "つかう" },
+            { burmese: "အပြင်ထွက်သည်", te: "でかけて", dictionary: "でかける" },
+            { burmese: "အဝတ်လျှော်သည်", te: "せんたくして", dictionary: "せんたくする" },
+            { burmese: "အိပ်သည်", te: "ねて", dictionary: "ねる" },
+            { burmese: "အိပ်ရာထသည်", te: "おきて", dictionary: "おきる" }
         ];
 
         // --- Game State ---
@@ -276,7 +279,7 @@
             const questionFormType = isTeFormQuestion ? 'te' : 'dictionary';
             const correctAnswer = currentQuestion[questionFormType];
 
-            questionEl.textContent = currentQuestion.masu;
+            questionEl.textContent = currentQuestion.burmese;
             questionTypeEl.textContent = `မှန်ကန်သော (${questionFormType === 'te' ? 'て形' : '辞書形'}) ကိုရွေးပါ`;
             scoreEl.textContent = `Score: ${score}`;
             questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} / ${TOTAL_QUESTIONS}`;
@@ -294,7 +297,7 @@
             options.forEach(option => {
                 const button = document.createElement('button');
                 button.textContent = option;
-                button.classList.add('w-full', 'p-4', 'rounded-lg', 'text-lg', 'font-semibold', 'transition-all', 'duration-200', 'bg-slate-200', 'dark:bg-slate-600', 'hover:bg-teal-200', 'dark:hover:bg-teal-500', 'transform', 'hover:scale-105');
+                button.classList.add('w-full', 'p-4', 'rounded-lg', 'text-lg', 'font-semibold', 'transition-all', 'duration-200', 'bg-slate-200', 'dark:bg-slate-600', 'hover:bg-indigo-200', 'dark:hover:bg-indigo-500', 'transform', 'hover:scale-105');
                 button.onclick = () => selectAnswer(option, correctAnswer, button);
                 optionsEl.appendChild(button);
             });
@@ -338,13 +341,13 @@
             let message = '';
             const percentage = (score / TOTAL_QUESTIONS) * 100;
             if (percentage === 100) {
-                message = 'Perfect! သင်ဟာ ဂျပန်ကြိယာပုံစံပြောင်းလဲခြင်းမှာ ကျွမ်းကျင်နေပါပြီ။';
+                message = 'Perfect! သင်ဟာ ဂျပန်ဝေါဟာရမှာ ဆရာကြီးပါပဲ။';
             } else if (percentage >= 70) {
-                message = 'အရမ်းကောင်းပါတယ်။ ဒီအတိုင်း ဆက်ကြိုးစားသွားပါ။';
+                message = 'အရမ်းကောင်းပါတယ်။ ဆက်ကြိုးစားပါ။';
             } else if (percentage >= 50) {
                 message = 'ကောင်းပါတယ်။ ဒါပေမယ့် ထပ်လေ့လာဖို့ လိုပါသေးတယ်။';
             } else {
-                message = 'နည်းနည်း 더 လေ့လာဖို့ လိုမယ်နော်။ အားမလျှော့ပါနဲ့။';
+                message = 'နည်းနည်း လေ့လာဖို့ လိုမယ်နော်။ အားမလျှော့ပါနဲ့။';
             }
             finalMessageEl.textContent = message;
         }
