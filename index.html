@@ -1,55 +1,80 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日本語動詞道場 (Japanese Verb Dojo)</title>
+    <title>日本語動詞活用チャレンジ (Japanese Verb Conjugation Challenge)</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Noto+Sans+JP:wght@700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Noto+Sans+JP:wght@700&family=Padauk:wght@400;700&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
 
     <div id="main-container">
-        <!-- Main Dojo Screen -->
-        <div id="dojo-screen" class="screen active">
-            <header>
-                <h1>日本語動詞道場</h1>
-                <p>N5の動詞を一つずつマスターしよう！</p>
-                <div id="dojo-stats">
-                    <span>マスター済み: <span id="mastered-count">0</span> / 106</span>
-                </div>
-            </header>
-            <div id="verb-dojo-grid">
-                <!-- Verbs will be populated by JS -->
-            </div>
-            <button id="reset-progress-button" class="btn-secondary">進捗をリセット (Progress အားလုံးပြန်ဖျက်ရန်)</button>
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>日本語動詞活用チャレンジ</h1>
+            <p>N5レベルの動詞活用をマスターしよう！</p>
+            <p class="lang-mm">N5 Level ကြိယာပုံစံပြောင်းလဲခြင်းများကို ကျွမ်းကျင်အောင်လေ့လာပါ။</p>
+            <button id="start-button" class="btn">スタート！</button>
         </div>
 
-        <!-- Training Screen -->
-        <div id="training-screen" class="screen">
-            <button id="back-to-dojo-btn">← 道場に戻る</button>
-            <div id="question-container">
-                <p id="training-verb-jisho"></p>
-                <p id="prompt-text"></p>
+        <!-- Challenge Selection Screen -->
+        <div id="challenge-selection-screen" class="screen">
+            <h1>チャレンジを選ぶ (Challenge ရွေးရန်)</h1>
+            <p>練習したい活用を選んでください。</p>
+            <div id="challenge-grid">
+                <button class="challenge-btn" data-mode="te">ます形 → て形</button>
+                <button class="challenge-btn" data-mode="ta">辞書形 → た形</button>
+                <button class="challenge-btn" data-mode="nai">辞書形 → ない形</button>
+                <button class="challenge-btn" data-mode="jisho">ます形 → 辞書形</button>
+                <button class="challenge-btn mixed-mode" data-mode="mixed">
+                    ミックスチャレンジ
+                    <span>(အားလုံးပေါင်း)</span>
+                </button>
             </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div id="hud">
+                <div id="timer">Time: <span>90</span></div>
+                <div id="score">Score: <span>0</span></div>
+            </div>
+
+            <div id="question-container">
+                <p id="prompt-text"></p>
+                <p id="question-verb"></p>
+                <p id="question-burmese" class="lang-mm"></p>
+            </div>
+
             <form id="answer-form">
-                <input type="text" id="answer-input" placeholder="こたえ を にゅうりょく" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                <button type="submit" class="btn submit-btn">提出</button>
+                <input type="text" id="answer-input" placeholder="こたえ を にゅうりょく" autocomplete="off" autocorrect="off"
+                    autocapitalize="off" spellcheck="false">
+                <button type="submit" class="btn submit-btn">決定</button>
             </form>
+
+            <button id="idk-button" class="btn-secondary">わからない (မသိဘူး)</button>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <h1>ゲーム終了！</h1>
+            <h2>Final Score:</h2>
+            <p id="final-score" class="score-display"></p>
+            <button id="play-again-button" class="btn">もう一度プレイ</button>
         </div>
     </div>
-    
-    <!-- Mastered Notification -->
-    <div id="mastered-notification" class="hidden">
-        <p>「<span id="mastered-verb-text"></span>」をマスターした！</p>
-        <span>おめでとう！</span>
-    </div>
-    
+
     <audio id="correct-sound" src="assets/correct.mp3"></audio>
     <audio id="incorrect-sound" src="assets/incorrect.mp3"></audio>
 
     <script src="script.js"></script>
 </body>
+
 </html>
