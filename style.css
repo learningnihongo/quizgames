@@ -1,0 +1,197 @@
+:root {
+    --primary-color: #4a69bd;
+    --primary-light: #6a89cc;
+    --secondary-color: #f6b93b;
+    --correct-color: #2ecc71;
+    --incorrect-color: #e74c3c;
+    --light-bg: #f5f6fa;
+    --dark-text: #2f3542;
+    --light-text: #ffffff;
+    --card-bg: #ffffff;
+    --border-color: #dfe4ea;
+}
+
+body {
+    font-family: 'Noto Sans Myanmar', 'Noto Sans JP', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--dark-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.description {
+    font-size: 1.1rem;
+    color: #747d8c;
+}
+
+#score-board {
+    display: flex;
+    justify-content: space-around;
+    background: var(--light-text);
+    padding: 10px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.game-card {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+#question-area p {
+    margin: 0;
+    font-size: 1rem;
+    color: #a4b0be;
+}
+
+#masu-form-display {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 10px 0 30px 0;
+}
+
+#options-container {
+    display: grid;
+    gap: 15px;
+}
+
+.option-btn {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--light-text);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 1.2rem;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.option-btn:hover:not([disabled]) {
+    border-color: var(--primary-color);
+    background-color: #f1f2f6;
+}
+
+.option-btn .dict-form {
+    font-weight: 700;
+    color: var(--dark-text);
+}
+
+.option-btn .te-form {
+    color: #747d8c;
+    font-size: 1rem;
+    margin-left: 10px;
+}
+
+/* Feedback Styles */
+#feedback-area {
+    min-height: 2em;
+    margin-top: 20px;
+}
+
+#feedback-text {
+    font-family: 'Noto Sans Myanmar', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.correct-feedback {
+    color: var(--correct-color);
+}
+
+.incorrect-feedback {
+    color: var(--incorrect-color);
+}
+
+.option-btn.correct {
+    background-color: var(--correct-color);
+    border-color: var(--correct-color);
+    color: var(--light-text);
+}
+
+.option-btn.correct .dict-form,
+.option-btn.correct .te-form {
+    color: var(--light-text);
+}
+
+.option-btn.incorrect {
+    background-color: var(--incorrect-color);
+    border-color: var(--incorrect-color);
+    color: var(--light-text);
+}
+
+.option-btn.incorrect .dict-form,
+.option-btn.incorrect .te-form {
+    color: var(--light-text);
+}
+
+
+#next-btn {
+    background: var(--primary-color);
+    color: var(--light-text);
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-family: 'Noto Sans Myanmar', sans-serif;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.2s ease;
+}
+
+#next-btn:hover {
+    background-color: var(--primary-light);
+}
+
+.hidden {
+    display: none;
+}
+
+/* For disabled buttons after selection */
+.option-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    #masu-form-display {
+        font-size: 2.2rem;
+    }
+
+    .game-card {
+        padding: 20px;
+    }
+}
