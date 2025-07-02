@@ -4,78 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日本語動詞クエスト (Japanese Verb Quest)</title>
+    <title>日本語動詞決闘 (Japanese Verb Duel)</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Noto+Sans+JP:wght@700&family=Padauk:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;900&family=Noto+Sans+JP:wght@700&family=Padauk:wght@400;700&display=swap"
         rel="stylesheet">
 </head>
 
 <body>
-
     <div id="main-container">
         <!-- World Map Screen -->
         <div id="world-map-screen" class="screen active">
             <header>
-                <h1>動詞クエスト</h1>
-                <p>全ての地域を制覇して動詞マスターになろう！</p>
+                <h1>動詞決闘</h1>
+                <p>全ての地域を制覇し、最強の決闘者を目指せ！</p>
             </header>
-            <div id="world-map-grid">
-                <!-- Regions will be populated by JS -->
-            </div>
+            <div id="world-map-grid"></div>
         </div>
 
         <!-- Region Screen -->
         <div id="region-screen" class="screen">
             <header class="screen-header">
-                <button id="back-to-map-btn" class="back-btn" aria-label="Back to World Map">
+                <button id="back-to-map-btn" class="back-btn" aria-label="Back to Map">
                     <svg viewBox="0 0 24 24">
                         <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
                     </svg>
                 </button>
                 <h2 id="region-title"></h2>
             </header>
-            <div id="region-progress-container">
-                <div id="region-progress-bar"></div>
-            </div>
-            <div id="verb-stage-grid">
-                <!-- Verb stages will be populated by JS -->
-            </div>
+            <div id="verb-stage-grid"></div>
         </div>
 
-        <!-- Quiz Screen -->
-        <div id="quiz-screen" class="screen">
-            <header class="screen-header">
-                <h2 id="quiz-verb-title"></h2>
-            </header>
-            <div id="quiz-progress-container">
-                <!-- Quiz progress dots will be populated by JS -->
+        <!-- Duel Screen -->
+        <div id="duel-screen" class="screen">
+            <div id="battlefield">
+                <div id="target-card-area"></div>
+                <div id="player-hand-area"></div>
             </div>
-            <p id="quiz-prompt"></p>
-            <form id="answer-form">
-                <input type="text" id="answer-input" placeholder="こたえ..." autocomplete="off" autocorrect="off"
-                    autocapitalize="off" spellcheck="false">
-                <button type="submit" class="btn submit-btn" aria-label="Submit Answer">
-                    <svg viewBox="0 0 24 24">
-                        <path d="m12 4 1.41 1.41L7.83 11H20v2H7.83l5.58 5.59L12 20l-8-8 8-8z"
-                            transform="rotate(180 12 12)"></path>
-                    </svg>
-                </button>
-            </form>
         </div>
     </div>
 
-    <div id="unlock-notification" class="hidden">
-        <p>新しい地域がアンロックされました！</p>
-        <span><strong id="unlocked-region-name"></strong></span>
+    <div id="stage-clear-overlay" class="hidden">
+        <div class="overlay-content">
+            <p>ステージクリア！</p>
+            <button id="next-stage-btn">OK</button>
+        </div>
     </div>
 
-    <audio id="correct-sound" src="assets/correct.mp3"></audio>
-    <audio id="incorrect-sound" src="assets/incorrect.mp3"></audio>
+    <audio id="card-play-sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_731c318abe.mp3"></audio>
+    <audio id="correct-sound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_2e11363293.mp3"></audio>
     <audio id="stage-clear-sound" src="https://cdn.pixabay.com/audio/2021/08/04/audio_bb630cc098.mp3"></audio>
-    <audio id="region-unlock-sound" src="https://cdn.pixabay.com/audio/2022/03/22/audio_61b4836f32.mp3"></audio>
 
     <script src="script.js"></script>
 </body>
