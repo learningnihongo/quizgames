@@ -1,60 +1,72 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N5 動詞活用クイズ (N5 Verb Quiz)</title>
+    <title>動詞判定チャレンジ (Verb Judgment Challenge)</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Noto+Sans+JP:wght@400;700&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
 
     <div class="game-container">
-        
         <!-- Start Screen -->
         <div id="start-screen" class="screen active">
-            <h1>N5 動詞活用クイズ</h1>
-            <p>ます形を見て、正しい「て形」と「辞書形」を選んでください。</p>
-            <p class="lang-mm">ます Form ကိုကြည့်ပြီး မှန်ကန်သော て Form နှင့် 辞書形 ကိုရွေးချယ်ပါ။</p>
-            <button id="start-button" class="btn">ゲーム開始 (Game စတင်ရန်)</button>
+            <h1 class="title-font">動詞判定チャレンジ</h1>
+            <p>辞書形とて形が正しいペアか判定してください。</p>
+            <p class="lang-mm">辞書形 နှင့် て形 အတွဲ မှန်၊ မမှန် ဆုံးဖြတ်ပါ။</p>
+            <button id="start-button" class="btn">ゲーム開始</button>
         </div>
 
         <!-- Quiz Screen -->
         <div id="quiz-screen" class="screen">
-            <div id="progress-container">
-                <div id="progress-text"></div>
-                <div id="progress-bar-full">
-                    <div id="progress-bar"></div>
+            <div id="hud">
+                <div id="timer">Time: <span>60</span></div>
+                <div id="score">Score: <span>0</span></div>
+            </div>
+
+            <div id="card-container">
+                <div id="verb-card">
+                    <div class="verb-section">
+                        <p class="form-label">辞書形</p>
+                        <h2 id="jisho-form"></h2>
+                    </div>
+                    <div class="verb-section">
+                        <p class="form-label">て形</p>
+                        <h2 id="te-form"></h2>
+                    </div>
+                    <div id="result-overlay"></div>
                 </div>
             </div>
 
-            <div id="question-card">
-                <p class="question-label">ます形 (Masu Form)</p>
-                <h2 id="question-masu"></h2>
-                <p id="question-burmese" class="lang-mm"></p>
+            <div id="choice-buttons">
+                <button id="choice-false" class="choice-btn btn-false">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                    </svg>
+                    <span>誤 (မှား)</span>
+                </button>
+                <button id="choice-true" class="choice-btn btn-true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                    <span>正 (မှန်)</span>
+                </button>
             </div>
-
-            <div class="answer-section">
-                <h3>て形 (Te Form)</h3>
-                <div id="te-form-options" class="options-grid"></div>
-            </div>
-
-            <div class="answer-section">
-                <h3>辞書形 (Dictionary Form)</h3>
-                <div id="jisho-form-options" class="options-grid"></div>
-            </div>
-            
-            <button id="next-button" class="btn hidden">次へ (နောက်တစ်ခု)</button>
         </div>
 
         <!-- Result Screen -->
         <div id="result-screen" class="screen">
-            <h1>クイズ終了！</h1>
-            <h2 id="final-score"></h2>
-            <p id="result-message"></p>
-            <button id="play-again-button" class="btn">もう一度 (ထပ်ကစားရန်)</button>
+            <h1 class="title-font">終了！</h1>
+            <h2>Final Score</h2>
+            <p id="final-score" class="score-display"></p>
+            <button id="play-again-button" class="btn">もう一度</button>
         </div>
     </div>
 
@@ -63,4 +75,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
