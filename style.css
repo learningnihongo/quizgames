@@ -1,17 +1,20 @@
 :root {
-    --bg-color: #f0f4f8;
+    --bg-color: #f4f7f9;
     --card-color: #ffffff;
-    --primary-color: #2c3e50;
-    /* Midnight Blue */
-    --accent-color: #3498db;
-    /* Peter River Blue */
-    --text-color: #333;
+    --text-color: #3d475c;
+    --text-light: #7a8aa0;
+    --gradient-start: #4c63d2;
+    --gradient-end: #7f57c1;
     --correct-color: #2ecc71;
-    /* Emerald */
     --incorrect-color: #e74c3c;
-    /* Alizarin */
     --font-jp: 'M PLUS Rounded 1c', 'Noto Sans JP', sans-serif;
     --font-burmese: 'Padauk', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 body {
@@ -23,19 +26,17 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 16px;
 }
 
 #main-container {
     width: 100%;
-    max-width: 550px;
+    max-width: 500px;
     background-color: var(--card-color);
-    padding: 30px 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+    padding: 32px;
+    border-radius: 24px;
+    box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    transition: all 0.3s ease;
 }
 
 .screen {
@@ -46,105 +47,141 @@ body {
 
 .screen.active {
     display: flex;
-    animation: fadeIn 0.4s ease-in-out;
+    animation: fadeIn 0.5s ease-out;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: scale(0.98);
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
     }
 }
 
+.icon-container-large {
+    background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+    color: white;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 16px;
+}
+
+.icon-container-large svg {
+    width: 32px;
+    height: 32px;
+}
+
 h1 {
-    color: var(--primary-color);
     font-weight: 800;
     margin-bottom: 8px;
+    font-size: 2em;
 }
 
 h1+p {
     margin-top: 0;
     font-size: 1.1em;
-    color: #666;
+    color: var(--text-light);
 }
 
 .lang-mm {
     font-family: var(--font-burmese);
-    color: #555;
+    color: var(--text-light);
     font-size: 1.1em;
 }
 
 .btn {
-    font-family: var(--font-jp);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     font-weight: 800;
-    background: var(--primary-color);
+    background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
     color: white;
     border: none;
-    padding: 15px 30px;
+    padding: 14px 28px;
     border-radius: 12px;
-    font-size: 1.2em;
+    font-size: 1.1em;
     cursor: pointer;
     transition: all 0.2s;
-    margin-top: 20px;
+    margin-top: 24px;
+    box-shadow: 0 4px 15px -5px rgba(100, 100, 200, 0.4);
 }
 
 .btn:hover {
-    background-color: #34495e;
     transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 20px -5px rgba(100, 100, 200, 0.5);
+}
+
+.btn svg {
+    width: 20px;
+    height: 20px;
 }
 
 /* Challenge Selection Screen */
 #challenge-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: 12px;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 24px;
 }
 
 .challenge-btn {
-    background-color: #fff;
-    color: var(--accent-color);
-    border: 2px solid var(--accent-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 2px solid #e0e6ec;
     padding: 20px;
-    border-radius: 10px;
-    font-size: 1.1em;
+    border-radius: 16px;
+    font-size: 1em;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .challenge-btn:hover {
-    background-color: var(--accent-color);
-    color: #fff;
+    border-color: var(--gradient-start);
+    color: var(--gradient-start);
     transform: translateY(-4px);
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.challenge-btn svg {
+    width: 28px;
+    height: 28px;
+    color: var(--gradient-start);
 }
 
 .challenge-btn.mixed-mode {
     grid-column: 1 / -1;
-    /* Span full width */
-    background-color: var(--primary-color);
-    color: #fff;
-    border-color: var(--primary-color);
+    background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+    color: white;
+    border: none;
 }
 
-.challenge-btn.mixed-mode span {
-    display: block;
-    font-size: 0.8em;
-    font-weight: 500;
-    opacity: 0.8;
+.challenge-btn.mixed-mode svg {
+    color: white;
 }
 
 .challenge-btn.mixed-mode:hover {
-    background-color: #3c546e;
-    border-color: #3c546e;
+    color: white;
+    border: none;
+}
+
+.challenge-btn.mixed-mode span {
+    font-size: 0.8em;
+    opacity: 0.8;
 }
 
 /* Quiz Screen */
@@ -152,35 +189,35 @@ h1+p {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    font-size: 1.2em;
+    font-size: 1.1em;
     font-weight: 500;
-    margin-bottom: 25px;
-    color: var(--primary-color);
+    margin-bottom: 24px;
+    color: var(--text-light);
 }
 
 #question-container {
     background-color: var(--bg-color);
     width: 100%;
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 25px;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 24px;
 }
 
 #prompt-text {
-    font-size: 1.1em;
-    color: var(--accent-color);
+    font-size: 1em;
+    color: var(--gradient-start);
     font-weight: 700;
-    margin: 0 0 10px 0;
+    margin: 0 0 8px 0;
 }
 
 #question-verb {
-    font-size: 3em;
+    font-size: 2.8em;
     font-weight: 800;
     margin: 0;
 }
 
 #question-burmese {
-    font-size: 1.3em;
+    font-size: 1.2em;
     margin-top: 8px;
 }
 
@@ -192,11 +229,11 @@ h1+p {
 
 #answer-input {
     flex-grow: 1;
-    border: 2px solid #ccc;
+    border: 2px solid #e0e6ec;
     background-color: #fff;
-    border-radius: 10px;
-    padding: 15px;
-    font-size: 1.5em;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1.4em;
     font-family: var(--font-jp);
     text-align: center;
     transition: all 0.3s;
@@ -204,8 +241,8 @@ h1+p {
 
 #answer-input:focus {
     outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
+    border-color: var(--gradient-start);
+    box-shadow: 0 0 0 4px rgba(76, 99, 210, 0.1);
 }
 
 #answer-input.correct {
@@ -221,7 +258,33 @@ h1+p {
 
 .submit-btn {
     margin-top: 0;
-    padding: 0 30px;
+    padding: 16px;
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 0.9em;
+    cursor: pointer;
+    margin-top: 16px;
+    padding: 8px;
+}
+
+.btn-secondary:hover {
+    color: var(--gradient-start);
+}
+
+.score-display {
+    font-size: 4em;
+    font-weight: 800;
+    color: var(--gradient-start);
 }
 
 @keyframes shake {
@@ -262,21 +325,27 @@ h1+p {
     }
 }
 
-.btn-secondary {
-    background: none;
-    border: none;
-    color: #777;
-    font-size: 0.9em;
-    cursor: pointer;
-    margin-top: 15px;
-}
+/* --- Mobile View --- */
+@media (max-width: 600px) {
+    #main-container {
+        padding: 24px 16px;
+    }
 
-.btn-secondary:hover {
-    color: var(--accent-color);
-}
+    h1 {
+        font-size: 1.8em;
+    }
 
-.score-display {
-    font-size: 4em;
-    font-weight: 800;
-    color: var(--primary-color);
+    #challenge-grid {
+        grid-template-columns: 1fr;
+        /* Single column layout for buttons */
+    }
+
+    #question-verb {
+        font-size: 2.2em;
+        /* Smaller font on mobile */
+    }
+
+    #answer-input {
+        font-size: 1.2em;
+    }
 }
